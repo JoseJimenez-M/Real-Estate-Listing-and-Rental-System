@@ -74,6 +74,7 @@ $totalPages = ceil($total / $limit);
                                 <a href="edit_property.php?id=<?= $property['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
                                 <a href="delete_property.php?id=<?= $property['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</a>
                             <?php endif; ?>
+                            
                         </div>
                     </div>
                 </div>

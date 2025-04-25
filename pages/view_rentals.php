@@ -32,12 +32,12 @@ $rentals = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <li class="list-group-item">
                     <strong>Tenant:</strong> <?= htmlspecialchars($r['tenant_name']) ?><br>
                     <strong>Property:</strong> <?= htmlspecialchars($r['property_title']) ?><br>
-                    <strong>From:</strong> <?= $r['start_date'] ?> to <?= $r['end_date'] ?><br>
-                    <a href="../uploads/<?= htmlspecialchars($r['document']) ?>" target="_blank">View Document</a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
+                    <strong>From:</strong> <?= $r['start_date'] ?> to <?= $r['end_date'] ?><br>        
+                    <a href="../uploads/<?= htmlspecialchars($r['document']) ?>" target="_blank">View Document</a>                    
+                </li>                
+            <?php endforeach; ?>            
+        </ul>        
+    <?php endif; ?>    
 </div>
 
 <?php include("../includes/footer.php"); ?>

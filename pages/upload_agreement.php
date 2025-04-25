@@ -24,20 +24,38 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $doc = $_FILES['document'] ?? null;
 
     if ($property_id && $start_date && $end_date && $doc && $doc['error'] === 0) {
-        $docName = time() . "_" . basename($doc['name']);
-        $targetPath = "../uploads/" . $docName;
 
-        if (move_uploaded_file($doc['tmp_name'], $targetPath)) {
-            $sql = "INSERT INTO rentals (property_id, tenant_id, start_date, end_date, document)
-                    VALUES (?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if ($stmt->execute([$property_id, $user_id, $start_date, $end_date, $docName])) {
-                $message = "Rental agreement uploaded successfully!";
-            } else {
-                $message = "Failed to save rental agreement.";
-            }
+          $checkSql = "
+            SELECT COUNT(*) 
+            FROM rentals 
+            WHERE property_id = ? 
+            AND (
+                (start_date <= ? AND end_date >= ?) OR 
+                (start_date <= ? AND end_date >= ?)
+            )
+        ";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->execute([$property_id, $start_date, $start_date, $end_date, $end_date]);
+        $conflictCount = $checkStmt->fetchColumn();
+
+        if ($conflictCount > 0) {
+            $message = "The selected dates conflict with an existing rental agreement. Please contact the owner by private message for more avalibles dates or try again";
         } else {
-            $message = "File upload failed.";
+            $docName = time() . "_" . basename($doc['name']);
+            $targetPath = "../uploads/" . $docName;
+
+            if (move_uploaded_file($doc['tmp_name'], $targetPath)) {
+                $sql = "INSERT INTO rentals (property_id, tenant_id, start_date, end_date, document)
+                        VALUES (?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                if ($stmt->execute([$property_id, $user_id, $start_date, $end_date, $docName])) {
+                    $message = "Rental agreement uploaded successfully!";
+                } else {
+                    $message = "Failed to save rental agreement.";
+                }
+            } else {
+                $message = "File upload failed.";
+            }
         }
     } else {
         $message = "Please fill in all fields and upload a valid document.";
@@ -46,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 // Fetch uploaded agreements by this tenant
 $rentalsStmt = $conn->prepare("
-    SELECT r.*, p.title AS property_title
+    SELECT r.*, r.property_id, p.title AS property_title
     FROM rentals r
     JOIN properties p ON r.property_id = p.id
     WHERE r.tenant_id = ?
@@ -58,6 +76,11 @@ $rentals = $rentalsStmt->fetchAll(PDO::FETCH_ASSOC);
 <?php include("../includes/header.php"); ?>
 
 <div class="container mt-5">
+
+<?php if (isset($_GET['paid']) && $_GET['paid'] == 1): ?>
+    <div class="alert alert-success">Payment completed successfully!</div>
+<?php endif; ?>
+
     <h2>Upload Rental Agreement</h2>
 
     <?php if ($message): ?>
@@ -101,6 +124,13 @@ $rentals = $rentalsStmt->fetchAll(PDO::FETCH_ASSOC);
                     <strong>Property:</strong> <?= htmlspecialchars($r['property_title']) ?><br>
                     <strong>Start:</strong> <?= $r['start_date'] ?> |
                     <strong>End:</strong> <?= $r['end_date'] ?><br>
+            <!--button and check-->
+                            <?php  if (!$r['PaymentState']): ?>
+                                <a href="../pages/checkout.php?rental_id=<?= $r['id'] ?>" class="btn btn-success">Pay now</a>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Paid</span>
+                            <?php endif; ?>
+                    <br>
                     <a href="../uploads/<?= htmlspecialchars($r['document']) ?>" target="_blank">View Document</a>
                 </li>
             <?php endforeach; ?>
