@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once "../config/db.php";
+require_once "../config/telegram_notify.php";
+sendTelegramMessage("Payment succesful for Property ID #$property_id for user ID #$user_id");
 
 $rental_id = $_GET['rental_id'] ?? null;
 if (!$rental_id) {
@@ -21,5 +23,7 @@ $stmt->execute([$rental_id]);
     </div>
     <a href="../pages/upload_agreement.php" class="btn btn-primary">See my rentals</a>
 </div>
+
+
 
 <?php include("../includes/footer.php"); ?>

@@ -49,8 +49,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 if ($stmt->execute([$property_id, $user_id, $start_date, $end_date, $docName])) {
+                    require_once "../config/telegram_notify.php";
+                    sendTelegramMessage("New agreement: Property ID #$property_id for user ID #$user_id");
                     $message = "Rental agreement uploaded successfully!";
-                } else {
+                }
+                 else {
                     $message = "Failed to save rental agreement.";
                 }
             } else {

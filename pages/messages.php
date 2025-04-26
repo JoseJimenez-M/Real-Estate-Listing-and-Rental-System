@@ -2,7 +2,6 @@
 session_start();
 require_once "../config/db.php";
 
-// Redirect if not logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
@@ -11,7 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $messageStatus = "";
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $receiver_id = $_POST['receiver_id'] ?? '';
     $message = $_POST['message'] ?? '';
