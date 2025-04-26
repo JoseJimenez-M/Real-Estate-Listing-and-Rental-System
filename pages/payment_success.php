@@ -2,7 +2,6 @@
 session_start();
 require_once "../config/db.php";
 require_once "../config/telegram_notify.php";
-sendTelegramMessage("Payment succesful for Property ID #$property_id for user ID #$user_id");
 
 $rental_id = $_GET['rental_id'] ?? null;
 if (!$rental_id) {
@@ -10,8 +9,22 @@ if (!$rental_id) {
     exit;
 }
 
+$user_id = $_SESSION['user_id'] ?? null;
+
+$stmt = $conn->prepare("SELECT property_id FROM rentals WHERE id = ?");
+$stmt->execute([$rental_id]);
+$rental = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$rental) {
+    die("Rental not found.");
+}
+
+$property_id = $rental['property_id'];
+
 $stmt = $conn->prepare("UPDATE rentals SET PaymentState = 1 WHERE id = ?");
 $stmt->execute([$rental_id]);
+
+sendTelegramMessage("Payment successful!\n Property ID: #$property_id\n User ID: #$user_id");
 
 ?>
 
@@ -19,11 +32,9 @@ $stmt->execute([$rental_id]);
 
 <div class="container mt-5">
     <div class="alert alert-success">
-        ¡Payment succesful! Book confirmed.
+        ¡Payment successful! Booking confirmed.
     </div>
     <a href="../pages/upload_agreement.php" class="btn btn-primary">See my rentals</a>
 </div>
-
-
 
 <?php include("../includes/footer.php"); ?>
