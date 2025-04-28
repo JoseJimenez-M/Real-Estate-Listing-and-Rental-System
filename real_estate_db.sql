@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Apr 14, 2025 at 02:01 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Servidor: 127.0.0.1:3306
+-- Tiempo de generación: 28-04-2025 a las 00:14:53
+-- Versión del servidor: 9.1.0
+-- Versión de PHP: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,62 +18,77 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `real_estate_db`
+-- Base de datos: `real_estate_db`
 --
+CREATE DATABASE IF NOT EXISTS `real_estate_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `real_estate_db`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `messages`
+-- Estructura de tabla para la tabla `messages`
 --
 
-CREATE TABLE `messages` (
-  `id` int(11) NOT NULL,
-  `sender_id` int(11) DEFAULT NULL,
-  `receiver_id` int(11) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `sent_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `messages`;
+CREATE TABLE IF NOT EXISTS `messages` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender_id` int DEFAULT NULL,
+  `receiver_id` int DEFAULT NULL,
+  `message` text COLLATE utf8mb4_general_ci,
+  `sent_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `receiver_id` (`receiver_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `messages`
+-- Volcado de datos para la tabla `messages`
 --
 
 INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `sent_at`) VALUES
 (1, 2, 1, 'Hello, there is a new listing for apartment.\r\nCheck it out!', '2025-04-13 23:09:38'),
-(2, 1, 2, 'Hii, thank you for informing me.\r\nI\'ll contact you soon.', '2025-04-13 23:11:06');
+(2, 1, 2, 'Hii, thank you for informing me.\r\nI\'ll contact you soon.', '2025-04-13 23:11:06'),
+(3, 2, 3, 'Hello! Im testing', '2025-04-21 01:17:42'),
+(4, 4, 6, 'Hello!', '2025-04-25 01:48:20'),
+(5, 3, 4, 'YOOOO, hows going?', '2025-04-25 01:49:29');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notifications`
+-- Estructura de tabla para la tabla `notifications`
 --
 
-CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `seen` tinyint(1) DEFAULT 0
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `message` text COLLATE utf8mb4_general_ci,
+  `seen` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `properties`
+-- Estructura de tabla para la tabla `properties`
 --
 
-CREATE TABLE `properties` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `description` text DEFAULT NULL,
+DROP TABLE IF EXISTS `properties`;
+CREATE TABLE IF NOT EXISTS `properties` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_general_ci,
   `price` decimal(10,2) DEFAULT NULL,
-  `location` varchar(255) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `location` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `properties`
+-- Volcado de datos para la tabla `properties`
 --
 
 INSERT INTO `properties` (`id`, `user_id`, `title`, `description`, `price`, `location`, `image`) VALUES
@@ -87,42 +102,52 @@ INSERT INTO `properties` (`id`, `user_id`, `title`, `description`, `price`, `loc
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rentals`
+-- Estructura de tabla para la tabla `rentals`
 --
 
-CREATE TABLE `rentals` (
-  `id` int(11) NOT NULL,
-  `property_id` int(11) DEFAULT NULL,
-  `tenant_id` int(11) DEFAULT NULL,
+DROP TABLE IF EXISTS `rentals`;
+CREATE TABLE IF NOT EXISTS `rentals` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `property_id` int DEFAULT NULL,
+  `tenant_id` int DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `document` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `document` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `PaymentState` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `property_id` (`property_id`),
+  KEY `tenant_id` (`tenant_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `rentals`
+-- Volcado de datos para la tabla `rentals`
 --
 
-INSERT INTO `rentals` (`id`, `property_id`, `tenant_id`, `start_date`, `end_date`, `document`) VALUES
-(1, 1, 1, '2025-04-24', '2025-12-19', '1744586206_Residential-Lease-Agreement-Template.pdf'),
-(2, 3, 4, '2025-04-30', '2026-05-31', '1744587878_Residential-Lease-Agreement-Template.pdf');
+INSERT INTO `rentals` (`id`, `property_id`, `tenant_id`, `start_date`, `end_date`, `document`, `PaymentState`) VALUES
+(1, 1, 1, '2025-04-24', '2025-12-19', '1744586206_Residential-Lease-Agreement-Template.pdf', 0),
+(2, 3, 4, '2025-04-30', '2026-05-31', '1744587878_Residential-Lease-Agreement-Template.pdf', 0),
+(4, 1, 7, '2026-01-23', '2026-06-10', '1745550863_Nuevo documento de texto.PDF', 0),
+(5, 2, 7, '2025-04-26', '2025-04-30', '1745691496_CoverLetter.pdf', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Estructura de tabla para la tabla `users`
 --
 
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `role` enum('owner','tenant','agent') DEFAULT 'tenant'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `role` enum('owner','tenant','agent') COLLATE utf8mb4_general_ci DEFAULT 'tenant',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Volcado de datos para la tabla `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`) VALUES
@@ -130,108 +155,34 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`) VALUES
 (2, 'Sujal Gandhi', 'sujal@gmail.com', '$2y$10$qLZTWFTALsAATc9P0oo1m.obpo1t0WGOGIlvDNFQ5yZqTnV4njWVe', 'owner'),
 (3, 'Jose Mota', 'jose@yahoo.com', '$2y$10$bPKxBOQnNAMDwkUQQXMtued4qq2oIMlveakKyplVIlTKd1feEqfty', 'agent'),
 (4, 'Francisco Guzman', 'franc@outlook.com', '$2y$10$ceGWqs6t7zXQQKOAAoELm.HYft.oSrbni85cNt.ZwHKeHx908xHAm', 'tenant'),
-(6, 'John Doe', 'john123@gmail.com', '$2y$10$OU/ZLCV7KMJ8SYeXWzR4m.msbBTOKHuYaPh2KG5ICyEfAvw9NRkS2', 'owner');
+(6, 'John Doe', 'john123@gmail.com', '$2y$10$OU/ZLCV7KMJ8SYeXWzR4m.msbBTOKHuYaPh2KG5ICyEfAvw9NRkS2', 'owner'),
+(7, 'Test', 'test123@gmail.com', '$2y$10$pJwcw696Qry9Mg6/L5p/4uurgkjzKVDo3Jc7I2IZY9bXEVqKyn3Ee', 'tenant');
 
 --
--- Indexes for dumped tables
---
-
---
--- Indexes for table `messages`
---
-ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `sender_id` (`sender_id`),
-  ADD KEY `receiver_id` (`receiver_id`);
-
---
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `properties`
---
-ALTER TABLE `properties`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `rentals`
---
-ALTER TABLE `rentals`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `property_id` (`property_id`),
-  ADD KEY `tenant_id` (`tenant_id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- AUTO_INCREMENT for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `messages`
---
-ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `notifications`
---
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `properties`
---
-ALTER TABLE `properties`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `rentals`
---
-ALTER TABLE `rentals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `messages`
+-- Filtros para la tabla `messages`
 --
 ALTER TABLE `messages`
   ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `notifications`
+-- Filtros para la tabla `notifications`
 --
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `properties`
+-- Filtros para la tabla `properties`
 --
 ALTER TABLE `properties`
   ADD CONSTRAINT `properties_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `rentals`
+-- Filtros para la tabla `rentals`
 --
 ALTER TABLE `rentals`
   ADD CONSTRAINT `rentals_ibfk_1` FOREIGN KEY (`property_id`) REFERENCES `properties` (`id`),
